@@ -38,15 +38,20 @@ export async function POST() {
 
     const prompt = `
 You are a psychologist analyzing a conversation between a Life Coach and a Client.
-Your task is to extract exactly 4 insights (one for each domain).
-LIFE DOMAINS:
-1. Career & Finance
-2. Physical & Mental Health
-3. Relationships & Social
-4. Personal Growth & Purpose
+Your task is to extract exactly 8 insights based on the user's specific life strategy framework.
+LIFE STRATEGY DOMAINS (Use EXACTLY the keys in quotes):
+- "Ikigai" (Focus, 'Flow' states, micro-experiments for career)
+- "Longevity" (Zone 2 cardio, Uric acid/Asthma tracking, Stability)
+- "Grief" (Action over talking, MV Day adherence)
+- "ADHD" (Use of external systems, cognitive load management)
+- "Career" (General Career & Finance)
+- "Health" (General Physical & Mental Health)
+- "Relationships" (General Relationships & Social)
+- "Growth" (General Personal Growth & Purpose)
 
-Analyze the history below and output a JSON array of objects with keys: "domain", "insight", "confidence" (1-5).
-ONLY OUTPUT THE JSON. NOTHING ELSE.
+Analyze the history below and output a JSON array of 8 objects with keys: "domain", "insight", "confidence" (1-5).
+Ensure the "domain" value exactly matches the keys provided above (e.g., "Ikigai").
+ONLY OUTPUT THE JSON. NOTHING ELSE. No markdown formatting around the JSON, just the raw array.
 If you know nothing about a domain, write "No data yet".
 
 CONVERSATION:
@@ -69,10 +74,21 @@ ${conversationText}
     const data = await res.json();
     let analysisResult;
     try {
-        const content = data.choices[0].message.content.trim();
-        // Extract JSON if model wraps it in md
-        const jsonMatch = content.match(/\[[\s\S]*\]/);
-        analysisResult = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+        let jsonStr = data.choices[0].message.content.trim();
+        // Remove markdown codeblock formatting if present
+        if (jsonStr.startsWith('```json')) jsonStr = jsonStr.replace(/^```json/, '');
+        else if (jsonStr.startsWith('```')) jsonStr = jsonStr.replace(/^```/, '');
+        if (jsonStr.endsWith('```')) jsonStr = jsonStr.replace(/```$/, '');
+        jsonStr = jsonStr.trim();
+        
+        try {
+           analysisResult = JSON.parse(jsonStr);
+        } catch(parseErr) {
+           // Fallback to regex extraction of array if there's pre/post conversational text
+           const jsonMatch = jsonStr.match(/\[[\s\S]*\]/);
+           if (!jsonMatch) throw parseErr;
+           analysisResult = JSON.parse(jsonMatch[0]);
+        }
     } catch(e) {
         throw new Error("Failed to parse LLM insight JSON: " + data.choices[0].message.content);
     }

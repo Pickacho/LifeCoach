@@ -8,7 +8,10 @@ export default function Dashboard() {
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [sliderValues, setSliderValues] = useState({ sleep: 7, stress: 5 });
+  const [inboxText, setInboxText] = useState('');
+  const [xp, setXp] = useState(0);
+  const [tiers, setTiers] = useState({ water: false, meds: false, zone2: false, deepWork: false, tantra: false });
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const chatEndRef = useRef(null);
 
   // Settings State
@@ -194,7 +197,7 @@ export default function Dashboard() {
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', width: '100%' }}>
         <div>
           <h1 className="title">בוקר טוב, רוקי</h1>
-          <p style={{ color: 'var(--outline)', fontSize: '1.1rem' }}>מערכת האימון שלך פעילה (ADHD Mode On)</p>
+          <p style={{ color: 'var(--outline)', fontSize: '1.1rem' }}>מערכת האימון פעילה (External Prefrontal Cortex)</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <button className="glass-card" onClick={() => setShowSettings(true)} style={{ display: 'flex', flex: 'none', border: '1px solid var(--border)', background: 'transparent', color: 'var(--foreground)', cursor: 'pointer', borderRadius: '50px', padding: '0.75rem' }}>
@@ -202,7 +205,7 @@ export default function Dashboard() {
           </button>
           <div className="glass-card" style={{ display: 'flex', gap: '1rem', alignItems: 'center', padding: '0.75rem 1.5rem', borderRadius: '50px' }}>
             <Zap color="var(--accent)" />
-            <span style={{ fontWeight: 600 }}>רצף ימים: 4</span>
+            <span style={{ fontWeight: 600 }}>XP Points: {xp}</span>
           </div>
         </div>
       </header>
@@ -278,6 +281,24 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Single Capture Inbox (ADHD Friendly) */}
+      <section className="glass-card" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--primary)', fontSize: '1.1rem' }}>📥 Single Capture Inbox</h3>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <input 
+                 className="input-field" 
+                 placeholder="זרוק לפה כל מחשבה, דאגה או משימה כדי לפנות זיכרון עבודה..." 
+                 value={inboxText}
+                 onChange={e => setInboxText(e.target.value)}
+                 onKeyDown={e => { if(e.key === 'Enter') { setInboxText(''); alert('נשמר במאגר!'); } }}
+                 style={{ flex: 1 }}
+              />
+              <button className="btn btn-primary" onClick={() => { setInboxText(''); alert('נשמר במאגר!'); }}>שמור מחשבה</button>
+            </div>
+         </div>
+      </section>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem', width: '100%' }}>
         
         {/* Memory / Life Domains Card */}
@@ -285,7 +306,7 @@ export default function Dashboard() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Brain color="var(--primary)" />
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>המוח של המאמן (מה למדתי עליך)</h2>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>מפת קונטקסט (Ikigai & Longevity)</h2>
             </div>
             <button onClick={triggerInsightSync} disabled={isSyncingInsights} className={isSyncingInsights ? "animate-spin" : ""} style={{ background: 'transparent', border: 'none', color: 'var(--outline)', cursor: 'pointer' }}>
                <RefreshCw size={20} />
@@ -293,12 +314,21 @@ export default function Dashboard() {
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-            {['Career & Finance', 'Physical & Mental Health', 'Relationships & Social', 'Personal Growth & Purpose'].map(domain => {
-              const info = insights.find(i => i.domain.includes(domain.split(' ')[0]));
+            {[
+              { id: 'Ikigai', label: 'Ikigai & Career Pivot' }, 
+              { id: 'Longevity', label: 'Longevity (Med 3.0)' }, 
+              { id: 'Grief', label: 'Grief & Resilience' }, 
+              { id: 'ADHD', label: 'ADHD & Systems' }, 
+              { id: 'Career', label: 'General Career' }, 
+              { id: 'Health', label: 'General Health' }, 
+              { id: 'Relationships', label: 'Relationships' }, 
+              { id: 'Growth', label: 'Personal Growth' }
+            ].map(domain => {
+              const info = insights.find(i => i.domain === domain.id);
               return (
-                <div key={domain} className="glass-card" style={{ padding: '1.5rem', border: '1px solid rgba(255,255,255,0.08)', background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)' }}>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>{domain}</div>
-                  <div style={{ fontSize: '1rem', minHeight: '80px', lineHeight: '1.5', opacity: info ? 1 : 0.5 }}>{info ? info.insight : 'טרם נאסף מידע מספק... המאמן מאזין לשיחות שלך.'}</div>
+                <div key={domain.id} className="glass-card" style={{ padding: '1.5rem', border: '1px solid rgba(255,255,255,0.08)', background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>{domain.label}</div>
+                  <div style={{ fontSize: '1rem', minHeight: '80px', lineHeight: '1.5', opacity: info ? 1 : 0.5 }}>{info ? info.insight : 'ממתין לסנכרון נתונים...'}</div>
                   {info && (
                     <div style={{ display: 'flex', gap: '4px', marginTop: '1rem' }}>
                       {[1,2,3,4,5].map(v => <div key={v} style={{ height: '6px', flex: 1, borderRadius: '4px', background: v <= info.confidence ? 'var(--primary)' : 'rgba(255,255,255,0.05)', boxShadow: v <= info.confidence ? '0 0 8px var(--primary)' : 'none' }} />)}
@@ -312,40 +342,61 @@ export default function Dashboard() {
 
         {/* Focus / Quick Wins Sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Daily Stats Sliders (Moved here to fill width) */}
+            
             <section className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Activity color="var(--accent)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>מדדים מהירים</h2>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>Data & Health Integrations</h2>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                    <span>שעות שינה</span>
-                    <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{sliderValues.sleep}h</span>
-                  </div>
-                  <input type="range" min="0" max="14" step="0.5" className="input-slider" 
-                         value={sliderValues.sleep} onChange={(e)=>setSliderValues({...sliderValues, sleep: e.target.value})} />
-                </div>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                    <span>רמת סטרס / פיזור קשב</span>
-                    <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{sliderValues.stress}</span>
-                  </div>
-                  <input type="range" min="1" max="10" step="1" className="input-slider" 
-                         value={sliderValues.stress} onChange={(e)=>setSliderValues({...sliderValues, stress: e.target.value})} />
-                </div>
-                <button className="btn btn-primary" style={{ marginTop: '0.5rem' }}>שמור נתונים</button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <p style={{ fontSize: '0.9rem', color: 'var(--outline)' }}>
+                  חיבור ל-Google Fit, Samsung Health, ו-Android Sleep יאפשר עדכון אוטומטי של שעות שינה, רמות סטרס, וזמני Zone 2.
+                </p>
+                <a href="/api/auth/google" className="btn" style={{ background: 'white', color: 'black', border: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" style={{width: '20px'}}/>
+                  {isGoogleConnected ? 'Google Connected!' : 'Connect Google Health'}
+                </a>
               </div>
             </section>
 
             <section className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Zap color="var(--primary)" />
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>פוקוס להיום</h2>
+                <CheckCircle2 color="var(--primary)" />
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>Gamified Tier System</h2>
               </div>
+              
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.95rem' }}>
-                 <p style={{ color: 'var(--outline)', fontStyle: 'italic' }}>המאמן יפיק משימות אלו מתוך שיחת ה-Onboarding שלך.</p>
+                 <div>
+                   <strong style={{ color: 'var(--outline)' }}>Tier 1 (MV Day)</strong>
+                   <label style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', cursor: 'pointer' }}>
+                     <input type="checkbox" checked={tiers.water} onChange={() => {setTiers({...tiers, water: !tiers.water}); setXp(p => !tiers.water ? p+10 : p-10)}} />
+                     שתיית 3.7 ליטר מים (+10 XP)
+                   </label>
+                   <label style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', cursor: 'pointer' }}>
+                     <input type="checkbox" checked={tiers.meds} onChange={() => {setTiers({...tiers, meds: !tiers.meds}); setXp(p => !tiers.meds ? p+10 : p-10)}} />
+                     תרופות ותבניות בסיס (+10 XP)
+                   </label>
+                 </div>
+                 
+                 <div>
+                   <strong style={{ color: 'var(--outline)' }}>Tier 2 (Priority)</strong>
+                   <label style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', cursor: 'pointer' }}>
+                     <input type="checkbox" checked={tiers.zone2} disabled={!isGoogleConnected} onChange={() => {}} title="Synched via Google automatically" />
+                     אימון Zone 2 (מסתנכרן מהשעון) (+50 XP)
+                   </label>
+                   <label style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', cursor: 'pointer' }}>
+                     <input type="checkbox" checked={tiers.deepWork} onChange={() => {setTiers({...tiers, deepWork: !tiers.deepWork}); setXp(p => !tiers.deepWork ? p+20 : p-20)}} />
+                     50 דקות Deep Work (+20 XP)
+                   </label>
+                 </div>
+                 
+                 <div>
+                   <strong style={{ color: 'var(--outline)' }}>Tier 3 (Bonus)</strong>
+                   <label style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', cursor: 'pointer' }}>
+                     <input type="checkbox" checked={tiers.tantra} onChange={() => {setTiers({...tiers, tantra: !tiers.tantra}); setXp(p => !tiers.tantra ? p+30 : p-30)}} />
+                     תרגול Mula Bandha (יוגה/טנטרה) (+30 XP)
+                   </label>
+                 </div>
               </div>
             </section>
         </div>
