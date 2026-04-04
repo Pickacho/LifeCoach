@@ -1,0 +1,137 @@
+                                                                                                :root {
+                                                                                                  --background: #0f172a;
+                                                                                                  /* Deep slate */
+                                                                                                  --foreground: #f8fafc;
+                                                                                                  --card: #1e293b;
+                                                                                                  --card-hover: #334155;
+                                                                                                  --primary: #3b82f6;
+                                                                                                  --primary-hover: #2563eb;
+                                                                                                  --accent: #22d3ee;
+                                                                                                  --success: #22c55e;
+                                                                                                  --destructive: #ef4444;
+                                                                                                  --border: #334155;
+                                                                                                  --outline: #475569;
+                                                                                                }
+
+                                                                                                html,
+                                                                                                body {
+                                                                                                  padding: 0;
+                                                                                                  margin: 0;
+                                                                                                  background-color: var(--background);
+                                                                                                  color: var(--foreground);
+                                                                                                  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                                                                                                  height: 100%;
+                                                                                                }
+
+                                                                                                * {
+                                                                                                  box-sizing: border-box;
+                                                                                                }
+
+                                                                                                /* Beautiful Scrollbar */
+                                                                                                ::-webkit-scrollbar {
+                                                                                                  width: 8px;
+                                                                                                }
+
+                                                                                                ::-webkit-scrollbar-track {
+                                                                                                  background: var(--background);
+                                                                                                }
+
+                                                                                                ::-webkit-scrollbar-thumb {
+                                                                                                  background: var(--border);
+                                                                                                  border-radius: 4px;
+                                                                                                }
+
+                                                                                                ::-webkit-scrollbar-thumb:hover {
+                                                                                                  background: var(--outline);
+                                                                                                }
+
+                                                                                                /* General Layout Util */
+                                                                                                .container {
+                                                                                                  width: 100%;
+                                                                                                  max-width: 1800px;
+                                                                                                  margin: 0 auto;
+                                                                                                  padding: 1.5rem 2rem;
+                                                                                                }
+
+                                                                                                .glass-card {
+                                                                                                  background-color: var(--card);
+                                                                                                  border: 1px solid var(--border);
+                                                                                                  border-radius: 16px;
+                                                                                                  padding: 1.5rem;
+                                                                                                  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                                                                                                  transition: transform 0.2s ease, box-shadow 0.2s ease;
+                                                                                                }
+
+                                                                                                .glass-card:hover {
+                                                                                                  transform: translateY(-2px);
+                                                                                                  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                                                                                                }
+
+                                                                                                .btn {
+                                                                                                  display: inline-flex;
+                                                                                                  align-items: center;
+                                                                                                  justify-content: center;
+                                                                                                  padding: 0.75rem 1.5rem;
+                                                                                                  font-weight: 500;
+                                                                                                  border-radius: 8px;
+                                                                                                  border: none;
+                                                                                                  cursor: pointer;
+                                                                                                  transition: all 0.2s;
+                                                                                                  font-size: 1rem;
+                                                                                                }
+
+                                                                                                .btn-primary {
+                                                                                                  background: linear-gradient(135deg, var(--primary), var(--accent));
+                                                                                                  color: white;
+                                                                                                  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+                                                                                                }
+
+                                                                                                .btn-primary:hover {
+                                                                                                  opacity: 0.9;
+                                                                                                  transform: translateY(-1px);
+                                                                                                }
+
+                                                                                                .title {
+                                                                                                  font-size: 2.5rem;
+                                                                                                  font-weight: 800;
+                                                                                                  background: linear-gradient(to right, var(--primary), var(--accent));
+                                                                                                  -webkit-background-clip: text;
+                                                                                                  background-clip: text;
+                                                                                                  color: transparent;
+                                                                                                  margin-bottom: 0.5rem;
+                                                                                                }
+
+                                                                                                .input-slider {
+                                                                                                  width: 100%;
+                                                                                                  appearance: none;
+                                                                                                  background: var(--border);
+                                                                                                  height: 8px;
+                                                                                                  border-radius: 4px;
+                                                                                                  outline: none;
+                                                                                                }
+
+                                                                                                .input-slider::-webkit-slider-thumb {
+                                                                                                  appearance: none;
+                                                                                                  width: 20px;
+                                                                                                  height: 20px;
+                                                                                                  background: var(--accent);
+                                                                                                  border-radius: 50%;
+                                                                                                  cursor: pointer;
+                                                                                                  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+                                                                                                }
+
+                                                                                                .input-field {
+                                                                                                  width: 100%;
+                                                                                                  background: rgba(15, 23, 42, 0.5);
+                                                                                                  border: 1px solid var(--border);
+                                                                                                  border-radius: 8px;
+                                                                                                  padding: 1rem;
+                                                                                                  color: var(--foreground);
+                                                                                                  font-family: inherit;
+                                                                                                  font-size: 1rem;
+                                                                                                }
+
+                                                                                                .input-field:focus {
+                                                                                                  outline: 2px solid var(--primary);
+                                                                                                  border-color: transparent;
+                                                                                                }
